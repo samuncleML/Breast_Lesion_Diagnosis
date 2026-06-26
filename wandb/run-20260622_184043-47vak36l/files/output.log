@@ -1,0 +1,14 @@
+c:\Users\Administrator\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\utils\data\dataloader.py:752: UserWarning: 'pin_memory' argument is set as true but no accelerator is found, then device pinned memory won't be used.
+  super().__init__(loader)
+c:\Users\Administrator\AppData\Local\Programs\Python\Python310\lib\site-packages\datasets\features\image.py:406: UserWarning: Downcasting array dtype int64 to int32 to be compatible with 'Pillow'
+  warnings.warn(f"Downcasting array dtype {dtype} to {dest_dtype} to be compatible with 'Pillow'")
+c:\Users\Administrator\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\utils\data\dataloader.py:752: UserWarning: 'pin_memory' argument is set as true but no accelerator is found, then device pinned memory won't be used.
+  super().__init__(loader)
+c:\Users\Administrator\AppData\Local\Programs\Python\Python310\lib\site-packages\datasets\features\image.py:406: UserWarning: Downcasting array dtype int64 to int32 to be compatible with 'Pillow'
+  warnings.warn(f"Downcasting array dtype {dtype} to {dest_dtype} to be compatible with 'Pillow'")
+c:\Users\Administrator\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\utils\data\dataloader.py:752: UserWarning: 'pin_memory' argument is set as true but no accelerator is found, then device pinned memory won't be used.
+  super().__init__(loader)
+c:\Users\Administrator\AppData\Local\Programs\Python\Python310\lib\site-packages\datasets\features\image.py:406: UserWarning: Downcasting array dtype int64 to int32 to be compatible with 'Pillow'
+  warnings.warn(f"Downcasting array dtype {dtype} to {dest_dtype} to be compatible with 'Pillow'")
+c:\Users\Administrator\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\utils\data\dataloader.py:752: UserWarning: 'pin_memory' argument is set as true but no accelerator is found, then device pinned memory won't be used.
+  super().__init__(loader)

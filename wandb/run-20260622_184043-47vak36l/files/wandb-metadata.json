@@ -1,0 +1,36 @@
+{
+  "os":  "Windows-10-10.0.26200-SP0",
+  "python":  "CPython 3.10.0",
+  "startedAt":  "2026-06-22T18:40:43.919041Z",
+  "program":  "c:\\Users\\Administrator\\Desktop\\Python_Development\\huggingface\\notebook.ipynb",
+  "codePath":  "c:\\Users\\Administrator\\Desktop\\Python_Development\\huggingface\\notebook.ipynb",
+  "codePathLocal":  "notebook.ipynb",
+  "email":  "samuncle858@gmail.com",
+  "root":  "c:\\Users\\Administrator\\Desktop\\Python_Development\\huggingface",
+  "host":  "DESKTOP-BUGKGO7",
+  "executable":  "c:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python310\\python.exe",
+  "cpu_count":  4,
+  "cpu_count_logical":  8,
+  "gpu":  "NVIDIA GeForce GTX 1050",
+  "gpu_count":  1,
+  "disk":  {
+    "/":  {
+      "total":  "255009484800",
+      "used":  "203666456576"
+    }
+  },
+  "memory":  {
+    "total":  "8502915072"
+  },
+  "gpu_nvidia":  [
+    {
+      "name":  "NVIDIA GeForce GTX 1050",
+      "memoryTotal":  "2147483648",
+      "cudaCores":  640,
+      "architecture":  "Pascal",
+      "uuid":  "GPU-560c04b8-200a-fdaa-c9e1-7ff9b4fe57fa"
+    }
+  ],
+  "cudaVersion":  "12.3",
+  "writerId":  "zet9kvugeeyawb9d51i0o97epomvjdoz"
+}

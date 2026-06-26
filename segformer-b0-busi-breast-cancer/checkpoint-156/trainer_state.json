@@ -1,0 +1,148 @@
+{
+  "best_global_step": 156,
+  "best_metric": 0.17382489144802094,
+  "best_model_checkpoint": "/content/drive/MyDrive/huggingface/segformer-b0-busi-breast-cancer/checkpoint-156",
+  "epoch": 1.0,
+  "eval_steps": 500,
+  "global_step": 156,
+  "is_hyper_param_search": false,
+  "is_local_process_zero": true,
+  "is_world_process_zero": true,
+  "log_history": [
+    {
+      "epoch": 0.0641025641025641,
+      "grad_norm": 4.212345123291016,
+      "learning_rate": 5.9567307692307696e-05,
+      "loss": 0.6271677017211914,
+      "step": 10
+    },
+    {
+      "epoch": 0.1282051282051282,
+      "grad_norm": 3.4974801540374756,
+      "learning_rate": 5.908653846153847e-05,
+      "loss": 0.5687222480773926,
+      "step": 20
+    },
+    {
+      "epoch": 0.19230769230769232,
+      "grad_norm": 2.8817760944366455,
+      "learning_rate": 5.860576923076923e-05,
+      "loss": 0.5298345565795899,
+      "step": 30
+    },
+    {
+      "epoch": 0.2564102564102564,
+      "grad_norm": 3.170020818710327,
+      "learning_rate": 5.8125e-05,
+      "loss": 0.4723961353302002,
+      "step": 40
+    },
+    {
+      "epoch": 0.32051282051282054,
+      "grad_norm": 3.022099733352661,
+      "learning_rate": 5.764423076923077e-05,
+      "loss": 0.4356194496154785,
+      "step": 50
+    },
+    {
+      "epoch": 0.38461538461538464,
+      "grad_norm": 2.3563783168792725,
+      "learning_rate": 5.716346153846154e-05,
+      "loss": 0.4017594814300537,
+      "step": 60
+    },
+    {
+      "epoch": 0.44871794871794873,
+      "grad_norm": 2.2926697731018066,
+      "learning_rate": 5.668269230769231e-05,
+      "loss": 0.36628170013427735,
+      "step": 70
+    },
+    {
+      "epoch": 0.5128205128205128,
+      "grad_norm": 2.825021266937256,
+      "learning_rate": 5.620192307692308e-05,
+      "loss": 0.3612856388092041,
+      "step": 80
+    },
+    {
+      "epoch": 0.5769230769230769,
+      "grad_norm": 2.18005633354187,
+      "learning_rate": 5.572115384615385e-05,
+      "loss": 0.3393573522567749,
+      "step": 90
+    },
+    {
+      "epoch": 0.6410256410256411,
+      "grad_norm": 1.4749464988708496,
+      "learning_rate": 5.524038461538461e-05,
+      "loss": 0.2748040437698364,
+      "step": 100
+    },
+    {
+      "epoch": 0.7051282051282052,
+      "grad_norm": 2.9185662269592285,
+      "learning_rate": 5.4759615384615385e-05,
+      "loss": 0.2745526313781738,
+      "step": 110
+    },
+    {
+      "epoch": 0.7692307692307693,
+      "grad_norm": 1.53062903881073,
+      "learning_rate": 5.427884615384615e-05,
+      "loss": 0.2636136770248413,
+      "step": 120
+    },
+    {
+      "epoch": 0.8333333333333334,
+      "grad_norm": 1.4637737274169922,
+      "learning_rate": 5.3798076923076926e-05,
+      "loss": 0.22893567085266114,
+      "step": 130
+    },
+    {
+      "epoch": 0.8974358974358975,
+      "grad_norm": 2.1233675479888916,
+      "learning_rate": 5.331730769230769e-05,
+      "loss": 0.25047013759613035,
+      "step": 140
+    },
+    {
+      "epoch": 0.9615384615384616,
+      "grad_norm": 2.017584800720215,
+      "learning_rate": 5.283653846153846e-05,
+      "loss": 0.223172926902771,
+      "step": 150
+    },
+    {
+      "epoch": 1.0,
+      "eval_loss": 0.17382489144802094,
+      "eval_mean_iou": 0.7058207541141754,
+      "eval_runtime": 180.8191,
+      "eval_samples_per_second": 0.863,
+      "eval_steps_per_second": 0.216,
+      "step": 156
+    }
+  ],
+  "logging_steps": 10,
+  "max_steps": 1248,
+  "num_input_tokens_seen": 0,
+  "num_train_epochs": 8,
+  "save_steps": 500,
+  "stateful_callbacks": {
+    "TrainerControl": {
+      "args": {
+        "should_epoch_stop": false,
+        "should_evaluate": false,
+        "should_log": false,
+        "should_save": true,
+        "should_training_stop": false
+      },
+      "attributes": {}
+    }
+  },
+  "total_flos": 1.0937444245438464e+16,
+  "train_batch_size": 4,
+  "trial_name": null,
+  "trial_params": null
+}

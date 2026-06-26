@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Breast Ultrasound CADx System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="min-h-screen bg-slate-950 text-slate-100">
+    <main class="mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-6 sm:px-6 lg:px-8">
+      <header class="mb-6 rounded-2xl border border-slate-800 bg-slate-900/80 p-6 shadow-2xl shadow-black/30">
+        <h1 class="text-3xl font-semibold tracking-tight">Breast Ultrasound CADx System</h1>
+        <p class="mt-2 text-sm text-slate-400">Upload a breast ultrasound image and receive AI-assisted classification and lesion overlay insights.</p>
+      </header>
+
+      <section class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+        <div class="rounded-2xl border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-black/20">
+          <label for="imageInput" class="mb-4 block text-sm font-medium text-slate-300">Patient ultrasound image</label>
+          <div id="dropzone" class="flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-slate-700 bg-slate-950/70 px-6 py-16 text-center transition hover:border-cyan-400 hover:bg-slate-900">
+            <p class="text-lg font-medium text-slate-200">Drop your image here or click to browse</p>
+            <p class="mt-2 text-sm text-slate-500">PNG or JPG up to your device limits</p>
+            <input id="imageInput" type="file" accept="image/png,image/jpeg" class="hidden" />
+          </div>
+
+          <div class="mt-4 flex flex-wrap items-center gap-3">
+            <button id="analyzeButton" class="rounded-xl bg-cyan-500 px-5 py-3 font-semibold text-white transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:bg-slate-700">
+              Analyze Scan
+            </button>
+            <span id="statusText" class="text-sm text-slate-400">No image selected yet.</span>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-black/20">
+          <div id="resultsBanner" class="mb-4 hidden rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-sm font-medium">
+            <span id="resultLabel"></span>
+            <span id="resultConfidence" class="ml-2"></span>
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-2">
+            <div class="rounded-xl border border-slate-800 bg-slate-950/70 p-3">
+              <h2 class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">Original Image</h2>
+              <img id="originalImage" class="h-64 w-full rounded-lg object-contain bg-slate-900" alt="Uploaded ultrasound image" />
+            </div>
+            <div class="rounded-xl border border-slate-800 bg-slate-950/70 p-3">
+              <h2 class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">Overlay Result</h2>
+              <img id="overlayImage" class="h-64 w-full rounded-lg object-contain bg-slate-900" alt="Segmentation overlay" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="mt-8 text-center text-sm text-slate-500">
+        Medical AI helper tools serve as assistive diagnostic software only and must be cross-referenced with professional radiology guidelines.
+      </footer>
+    </main>
+
+    <script>
+      const imageInput = document.getElementById('imageInput');
+      const dropzone = document.getElementById('dropzone');
+      const analyzeButton = document.getElementById('analyzeButton');
+      const statusText = document.getElementById('statusText');
+      const originalImage = document.getElementById('originalImage');
+      const overlayImage = document.getElementById('overlayImage');
+      const resultsBanner = document.getElementById('resultsBanner');
+      const resultLabel = document.getElementById('resultLabel');
+      const resultConfidence = document.getElementById('resultConfidence');
+
+      let selectedFile = null;
+
+      const setBusy = (busy) => {
+        analyzeButton.disabled = busy;
+        analyzeButton.textContent = busy ? 'Analyzing…' : 'Analyze Scan';
+      };
+
+      const updateBanner = (label, confidence) => {
+        const isHighRisk = label === 'Malignant';
+        resultsBanner.classList.remove('hidden');
+        resultsBanner.className = `mb-4 rounded-xl border px-4 py-3 text-sm font-medium ${isHighRisk ? 'border-rose-500/40 bg-rose-500/10 text-rose-300' : 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'}`;
+        resultLabel.textContent = `Diagnosis: ${label}`;
+        resultConfidence.textContent = `Confidence: ${confidence}%`;
+      };
+
+      const previewSelectedFile = (file) => {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          originalImage.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      };
+
+      dropzone.addEventListener('click', () => imageInput.click());
+      dropzone.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        dropzone.classList.add('border-cyan-400', 'bg-slate-900');
+      });
+      dropzone.addEventListener('dragleave', () => {
+        dropzone.classList.remove('border-cyan-400', 'bg-slate-900');
+      });
+      dropzone.addEventListener('drop', (event) => {
+        event.preventDefault();
+        dropzone.classList.remove('border-cyan-400', 'bg-slate-900');
+        const file = event.dataTransfer.files?.[0];
+        if (file) {
+          selectedFile = file;
+          previewSelectedFile(file);
+          statusText.textContent = `Selected: ${file.name}`;
+        }
+      });
+
+      imageInput.addEventListener('change', (event) => {
+        const file = event.target.files?.[0];
+        if (file) {
+          selectedFile = file;
+          previewSelectedFile(file);
+          statusText.textContent = `Selected: ${file.name}`;
+        }
+      });
+
+      analyzeButton.addEventListener('click', async () => {
+        if (!selectedFile) {
+          statusText.textContent = 'Please select an ultrasound image first.';
+          return;
+        }
+
+        setBusy(true);
+        statusText.textContent = 'Uploading image and running analysis...';
+
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+
+        try {
+          const response = await fetch('/api/diagnose', {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.detail || 'Analysis failed.');
+          }
+
+          const data = await response.json();
+          overlayImage.src = `data:${data.overlay_mime_type};base64,${data.overlay_image_base64}`;
+          updateBanner(data.label, data.confidence);
+          statusText.textContent = 'Analysis complete.';
+        } catch (error) {
+          statusText.textContent = error.message || 'An unexpected error occurred.';
+        } finally {
+          setBusy(false);
+        }
+      });
+    </script>
+  </body>
+</html>
