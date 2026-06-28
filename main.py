@@ -2,6 +2,9 @@ import base64
 import io
 import os
 from pathlib import Path
+import sys
+
+print(sys.executable)
 
 import cv2
 import numpy as np
@@ -31,6 +34,25 @@ SEGFORMER_PATH = "busi-cllassifisification/final_busi_segformer_model"
 if not os.path.exists(SEGFORMER_PATH):
     SEGFORMER_PATH = str(BASE_DIR / "final_busi_segformer_model")
 segmenter = pipeline(task="image-segmentation", model=SEGFORMER_PATH)
+
+def smooth_mask(mask_array: np.ndarray, blur_kernel: int = 7) -> np.ndarray:
+    """Cleans up jagged edges from upscaling using Gaussian Blur and thresholding."""
+    if blur_kernel % 2 == 0:
+        blur_kernel += 1  # Kernel size must be odd
+    blurred = cv2.GaussianBlur(mask_array, (blur_kernel, blur_kernel), 0)
+    _, smoothed = cv2.threshold(blurred, 127, 255, cv2.THRESH_BINARY)
+    return smoothed
+
+
+def feathered_alpha_mask(mask_array: np.ndarray, feather: int = 9) -> np.ndarray:
+    """Creates a soft-edged alpha map instead of a hard cutoff."""
+    if feather % 2 == 0:
+        feather += 1  # Kernel size must be odd
+    # Normalize mask to 0.0 - 1.0
+    mask_float = mask_array.astype(np.float32) / 255.0
+    # Apply blur to create the soft, feathered edges
+    feathered = cv2.GaussianBlur(mask_float, (feather, feather), 0)
+    return feathered
 
 
 class BUSIMobilenet(nn.Module):
@@ -70,21 +92,46 @@ classifier_transforms = transforms.Compose(
 )
 
 
-def blend_mask_to_overlay(pil_image: Image.Image, pil_mask: Image.Image, alpha: float = 0.45) -> Image.Image:
+def blend_mask_to_overlay(
+    pil_image: Image.Image,
+    pil_mask: Image.Image,
+    alpha: float = 0.45,
+    draw_contour: bool = True,
+) -> Image.Image:
     image_array = np.array(pil_image.convert("RGB"))
     mask_array = np.array(pil_mask.convert("L"))
-
+ 
     if image_array.shape[:2] != mask_array.shape:
-        mask_array = cv2.resize(mask_array, (image_array.shape[1], image_array.shape[0]), interpolation=cv2.INTER_NEAREST)
-
-    overlay_color = np.zeros_like(image_array)
-    overlay_color[:] = [0, 0, 255]
-
-    output = image_array.copy()
-    mask_bool = mask_array > 0
-    if np.any(mask_bool):
-        output[mask_bool] = cv2.addWeighted(image_array, 1 - alpha, overlay_color, alpha, 0)[mask_bool]
-
+        # Use INTER_LINEAR here instead of INTER_NEAREST -- gives a
+        # smoother base to work with before we even get to smoothing.
+        mask_array = cv2.resize(
+            mask_array,
+            (image_array.shape[1], image_array.shape[0]),
+            interpolation=cv2.INTER_LINEAR,
+        )
+ 
+    # 1. Clean up the jagged edges from upscaling
+    mask_array = smooth_mask(mask_array, blur_kernel=7)
+ 
+    # 2. Soft-edged alpha instead of hard cutoff
+    alpha_map = feathered_alpha_mask(mask_array, feather=9) * alpha  # shape (H, W)
+    alpha_map_3ch = np.stack([alpha_map] * 3, axis=-1)  # (H, W, 3)
+ 
+    overlay_color = np.zeros_like(image_array, dtype=np.float32)
+    overlay_color[:] = [0, 0, 255]  # red in RGB order matching original
+ 
+    output = (
+        image_array.astype(np.float32) * (1 - alpha_map_3ch)
+        + overlay_color * alpha_map_3ch
+    ).astype(np.uint8)
+ 
+    # 3. Thin anti-aliased contour outline on top (optional, looks clinical)
+    if draw_contour:
+        contours, _ = cv2.findContours(
+            (mask_array > 0).astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE
+        )
+        cv2.drawContours(output, contours, -1, (255, 0, 0), thickness=2, lineType=cv2.LINE_AA)
+ 
     return Image.fromarray(output)
 
 
@@ -133,7 +180,7 @@ async def diagnose(file: UploadFile = File(...)):
     if tumor_mask is None:
         raise HTTPException(status_code=500, detail="The segmentation model did not return a mask.")
 
-    overlay_image = blend_mask_to_overlay(image, tumor_mask, alpha=0.45)
+    overlay_image = image if predicted_label == "Normal" else blend_mask_to_overlay(image, tumor_mask, alpha=0.45)
     buffer = io.BytesIO()
     overlay_image.save(buffer, format="PNG")
     overlay_base64 = base64.b64encode(buffer.getvalue()).decode("ascii")
@@ -150,5 +197,4 @@ async def diagnose(file: UploadFile = File(...)):
 
 if __name__ == "__main__":
     import uvicorn
-
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
